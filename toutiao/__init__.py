@@ -82,19 +82,19 @@ def create_app(config, enable_config_file=False):
 
     db.init_app(app)
 
-    # 实现定时任务，修正redis和mysql数据的同步问题
-    exe = {
-        'default':ThreadPoolExecutor(max_workers=20)
-    }
-
-    app.scheduler = BackgroundScheduler(executor=exe)
-    # 凌晨3点执行定时任务
-    from .aps_scheduler.aps_statistic import fix_statistic
-    # app.scheduler.add_job(fix_statistic,'cron',hour=3)
-    app.scheduler.add_job(fix_statistic,'date',args=[app])
-    # 启动定时任务
-    app.scheduler.start()
-
+    # # 实现定时任务，修正redis和mysql数据的同步问题
+    # exe = {
+    #     'default':ThreadPoolExecutor(max_workers=20)
+    # }
+    #
+    # app.scheduler = BackgroundScheduler(executor=exe)
+    # # 凌晨3点执行定时任务
+    # from .aps_scheduler.aps_statistic import fix_statistic
+    # # app.scheduler.add_job(fix_statistic,'cron',hour=3)
+    # app.scheduler.add_job(fix_statistic,'date',args=[app])
+    # # 启动定时任务
+    # app.scheduler.start()
+    #
 
 
     # # 添加请求钩子

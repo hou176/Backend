@@ -7,7 +7,7 @@ sys.path.insert(0, os.path.join(BASE_DIR, 'common'))
 from flask import jsonify
 
 
-from . import create_app
+from .import create_app
 from settings.default import DefaultConfig
 
 

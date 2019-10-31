@@ -1,6 +1,6 @@
 from flask_restful import Resource
 from flask_limiter.util import get_remote_address
-from flask import request, current_app, g
+from flask import request, current_app
 from flask_restful.reqparse import RequestParser
 import random
 from redis.exceptions import ConnectionError
@@ -10,7 +10,6 @@ from . import constants
 from utils import parser
 from models import db
 from models.user import User, UserProfile
-from utils.jwt_util import generate_jwt
 # from cache import user as cache_user
 from utils.limiter import limiter as lmt
 from utils.decorators import set_db_to_read, set_db_to_write
