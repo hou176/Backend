@@ -1,3 +1,5 @@
+from _datetime import datetime,timedelta
+
 from flask_restful import Resource
 from flask_limiter.util import get_remote_address
 from flask import request, current_app
@@ -10,6 +12,7 @@ from . import constants
 from utils import parser
 from models import db
 from models.user import User, UserProfile
+from utils.jwt_util import generate_jwt
 # from cache import user as cache_user
 from utils.limiter import limiter as lmt
 from utils.decorators import set_db_to_read, set_db_to_write
@@ -46,13 +49,21 @@ class AuthorizationResource(Resource):
         'put': [set_db_to_read]
     }
 
-    def _generate_tokens(self, user_id,is_refresh=False):
+    def _generate_tokens(self,user_id ):
         """
         生成token 和refresh_token
         :param user_id: 用户id
         :return: token2小时, refresh_token14天
         """
-        pass
+        # 当前时间
+        now = datetime.time()
+        # 过期时间  token1   两个小时
+        exp = now + timedelta(hours=current_app.config.get("JWT_EXPIRY_HOURS "))
+        token = generate_jwt({user_id:user_id},expiry=exp)
+        # 过期时间 renturn_token   十四天
+        exp2 = now + timedelta(days=current_app.config.get("JWT_REFRESH_DAYS"))
+        return_token = generate_jwt({user_id: user_id}, expiry=exp2)
+        return token,return_token
 
     def post(self):
         """

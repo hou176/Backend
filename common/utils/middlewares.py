@@ -24,5 +24,10 @@ def jwt_authentication():
             g.user_id = payload.get('user_id')
             g.refresh = payload.get('refresh')
 
+# 在请求钩子中 实现每次请求常识获取用户token  校验token提取用户id  赋值个g对象
+# 请求钩子中第二个
+# @app.before_request
+# 定义用户认证的功能函数 通过工厂函数中APP手动调用  befor_request请求钩子
+
 
 
