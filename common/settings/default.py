@@ -4,7 +4,7 @@ class DefaultConfig(object):
 
     """
     ERROR_404_HELP = False
-    
+    DEBUG = True
     # 日志
     LOGGING_LEVEL = 'DEBUG'
     LOGGING_FILE_DIR = '/home/python/logs'
@@ -59,7 +59,7 @@ class DefaultConfig(object):
     ES = [
         '127.0.0.1:9200'
     ]
-
+    # 七牛云的配置   私钥公钥 name 网址
     QINIU_ACCESS_KEY = ''
     QINIU_SECRET_KEY = ''
     QINIU_BUCKET_NAME = ''
@@ -100,5 +100,5 @@ class MisDefaultConfig(DefaultConfig):
     GEETEST_ID = ''
     GEETEST_KEY = ''
     SECRET_KEY = ''
-    DEBUG = False
+    DEBUG = True
     IS_INIT = False

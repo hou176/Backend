@@ -13,16 +13,26 @@ from .jwt_util import verify_jwt
 
 def jwt_authentication():
     # 从请求头中提取token，从token提取payload中存储的用户信息
-    token = request.headers.get('Authorization')
-    g.user_id = None
-    g.refresh = None
-    if token and token.startswith('Bearer '):
-        token = token[7:]
+    # token = request.headers.get('Authorization')
+    # g.user_id = None
+    # g.refresh = None
+    # if token and token.startswith('Bearer '):
+    #     token = token[7:]
         # token的校验
+
+
+    # 请求头中的获得token
+    auth = request.headers.get('Authorization')
+    if auth is not None and auth.startswith('Bearer'):
+        # 切片操作  用来选取一部分信息
+        token = auth[7:]
+        # 校验token，提取payload
         payload = verify_jwt(token)
+        # 如果在的话给g对象
         if payload:
             g.user_id = payload.get('user_id')
-            g.refresh = payload.get('refresh')
+            # g.refresh = payload.get('refresh')
+            g.id_refresh = payload.get('id_refresh')
 
 # 在请求钩子中 实现每次请求常识获取用户token  校验token提取用户id  赋值个g对象
 # 请求钩子中第二个

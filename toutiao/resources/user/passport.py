@@ -1,8 +1,8 @@
-from _datetime import datetime,timedelta
+from datetime import datetime,timedelta
 
 from flask_restful import Resource
 from flask_limiter.util import get_remote_address
-from flask import request, current_app
+from flask import request, current_app, g
 from flask_restful.reqparse import RequestParser
 import random
 from redis.exceptions import ConnectionError
@@ -15,7 +15,7 @@ from models.user import User, UserProfile
 from utils.jwt_util import generate_jwt
 # from cache import user as cache_user
 from utils.limiter import limiter as lmt
-from utils.decorators import set_db_to_read, set_db_to_write
+from utils.decorators import set_db_to_read
 
 
 class SMSVerificationCodeResource(Resource):
@@ -45,25 +45,27 @@ class AuthorizationResource(Resource):
     认证
     """
     method_decorators = {
-        'post': [set_db_to_write],
         'put': [set_db_to_read]
     }
 
-    def _generate_tokens(self,user_id ):
+    def _generate_tokens(self,user_id ,with_refresh_token=True):
         """
         生成token 和refresh_token
         :param user_id: 用户id
         :return: token2小时, refresh_token14天
         """
         # 当前时间
-        now = datetime.time()
+        now = datetime.utcnow()
         # 过期时间  token1   两个小时
-        exp = now + timedelta(hours=current_app.config.get("JWT_EXPIRY_HOURS "))
+        # exp = now + timedelta(hours=current_app.config.get("JWT_EXPIRY_HOURS "))
+        exp = now + timedelta(hours=2000000)
+        # exp = now + timedelta(hours=2)
         token = generate_jwt({user_id:user_id},expiry=exp)
         # 过期时间 renturn_token   十四天
-        exp2 = now + timedelta(days=current_app.config.get("JWT_REFRESH_DAYS"))
-        return_token = generate_jwt({user_id: user_id}, expiry=exp2)
-        return token,return_token
+        # exp2 = now + timedelta(days=current_app.config.get("JWT_REFRESH_DAYS"))
+        exp2 = now + timedelta(days=14)
+        refresh_token = generate_jwt({user_id: user_id}, expiry=exp2)
+        return token,refresh_token
 
     def post(self):
         """
@@ -84,10 +86,10 @@ class AuthorizationResource(Resource):
             current_app.logger.error(e)
             real_code = current_app.redis_slave.get(key)
 
-        try:
-            current_app.redis_master.delete(key)
-        except ConnectionError as e:
-            current_app.logger.error(e)
+        # try:
+        #     current_app.redis_master.delete(key)
+        # except ConnectionError as e:
+        #     current_app.logger.error(e)
 
         if not real_code or real_code.decode() != code:
             return {'message': 'Invalid code.'}, 400
@@ -107,10 +109,18 @@ class AuthorizationResource(Resource):
             if user.status == User.STATUS.DISABLE:
                 return {'message': 'Invalid user.'}, 403
 
-        token, refresh_token = self._generate_tokens(user.id)
+        token,refresh_token = self._generate_tokens(user.id)
+        # token,refresh_token = self._generate_tokens(mobile)
 
         return {'token': token, 'refresh_token': refresh_token}, 201
 
+    def put(self):
+        # 刷新token  有第二个token的话  就刷新   双token的机制
+        if g.user_id and g.is_refresh is True:
+            token,refresh_token = self._generate_tokens(g.user_id,with_refresh_token=False)
+            return {'token':token},201
+        else:
+            return{"message":'wrong token'},400
 
 
 
