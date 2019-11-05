@@ -10,6 +10,13 @@ from datetime import datetime
 
 
 
+# 检查是否有图片
+def check_image(files):
+    if  imghdr.what(files):
+        return files
+    else:
+        raise ValueError('没他妈的图片')
+
 def email(email_str):
     """
     检验邮箱格式

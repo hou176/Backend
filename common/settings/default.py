@@ -60,10 +60,10 @@ class DefaultConfig(object):
         '127.0.0.1:9200'
     ]
     # 七牛云的配置   私钥公钥 name 网址
-    QINIU_ACCESS_KEY = ''
-    QINIU_SECRET_KEY = ''
-    QINIU_BUCKET_NAME = ''
-    QINIU_DOMAIN = ''
+    QINIU_ACCESS_KEY = 'DLFOXbXwOneTDthWKu5XBkXopLbrY4PzL0fcmBEH'
+    QINIU_SECRET_KEY = '6xzUp2F7ZK6qUOCbBivH-4-94bePvwLmqyAnRJoo'
+    QINIU_BUCKET_NAME = 'flaskimage'
+    QINIU_DOMAIN = 'http://q0fsn9kr2.bkt.clouddn.com/'
 
     RABBITMQ = 'amqp://python:rabbitmqpwd@localhost:5672/toutiao'
 
